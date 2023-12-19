@@ -1,0 +1,196 @@
+#################### ZAD 5 ####################
+for $z in doc("db/bib/bib.xml")/bib/book return $z//last
+
+#################### ZAD 6 ####################
+for $book in doc("db/bib/bib.xml")/bib/book
+return
+<ksiazka>
+  {for $author in $book/author return $author}
+  {for $title in $book/title return $title}
+</ksiazka>
+
+#################### ZAD 7 ####################
+for $book in doc("db/bib/bib.xml")/bib/book
+for $author in $book/author
+for $title in $book/title
+return
+<ksiazka>
+  <autor>
+    {$author/last/text()}{$author/first/text()}
+  </autor>
+  <tytul>{$title/text()}</tytul>
+</ksiazka>
+
+#################### ZAD 8 ####################
+for $book in doc("db/bib/bib.xml")/bib/book
+for $author in $book/author
+for $title in $book/title
+return
+<ksiazka>
+  <autor>
+    { $author/last/text() || ' ' || $author/first/text() }
+  </autor>
+  <tytul>{$title/text()}</tytul>
+</ksiazka>
+
+#################### ZAD 9 ####################
+<wynik>
+{
+  for $book in doc("db/bib/bib.xml")/bib/book
+  for $author in $book/author
+  for $title in $book/title
+  return
+  <ksiazka>
+    <autor>
+      { $author/last/text() || ' ' || $author/first/text() }
+    </autor>
+    <tytul>{$title/text()}</tytul>
+  </ksiazka>
+}
+</wynik>
+
+#################### ZAD 10 ####################
+for $book in doc("db/bib/bib.xml")/bib/book[title='Data on the Web']
+return
+<imiona>
+    {
+      for $name in $book/author/first/text()
+      return <imie>{$name}</imie>
+    }
+</imiona>
+
+
+#################### ZAD 11.1 ####################
+for $book in doc("db/bib/bib.xml")/bib/book[title='Data on the Web']
+return
+<DataOnTheWeb>{$book}</DataOnTheWeb>
+
+#################### ZAD 11.2 ####################
+for $book in doc("db/bib/bib.xml")/bib/book where $book/title = 'Data on the Web'
+return
+<DataOnTheWeb>{$book}</DataOnTheWeb>
+
+
+#################### ZAD 12 ####################
+for $book in doc("db/bib/bib.xml")/bib/book where contains($book/title, 'Data')
+return
+<Data>
+  {
+    for $last in $book/author/last/text()
+    return <nazwisko>{$last}</nazwisko>
+  }
+</Data>
+
+
+#################### ZAD 13 ####################
+for $book in doc("db/bib/bib.xml")/bib/book where contains($book/title, 'Data')
+return
+<Data>
+  {$book/title}
+  {
+    for $last in $book/author/last/text()
+    return <nazwisko>{$last}</nazwisko>
+  }
+</Data>
+
+
+#################### ZAD 14 ####################
+for $book in doc("db/bib/bib.xml")/bib/book where count($book/author) <= 2
+return
+$book/title
+
+
+#################### ZAD 15 ####################
+for $book in doc("db/bib/bib.xml")/bib/book
+return
+<ksiazka>
+  {$book/title}
+  <autorow>{count($book/author)}</autorow>
+</ksiazka>
+
+
+#################### ZAD 16 ####################
+for $bib in doc("db/bib/bib.xml")/bib
+return
+<przedzial>
+  {min($bib/book/@year)} - {max($bib/book/@year)}
+</przedzial>
+
+
+#################### ZAD 17 ####################
+for $bib in doc("db/bib/bib.xml")/bib
+return
+<roznica>
+  {max($bib/book/price) - min($bib/book/price)}
+</roznica>
+
+
+#################### ZAD 18 ####################
+for $bib in doc("db/bib/bib.xml")/bib
+let $cheapest := min($bib/book/price)
+return
+<najtansze>
+{
+  for $book in $bib/book[price = $cheapest]
+  return
+  <najtansza>
+    {$book/title}
+    {$book/author}
+  </najtansza>
+}
+</najtansze>
+
+#################### ZAD 19 ####################
+for $last in distinct-values(doc("db/bib/bib.xml")/bib/book/author/last)
+return
+<autor>
+  <last>{$last}</last>
+  {
+    for $book in doc("db/bib/bib.xml")/bib/book
+    where contains($book, $last)
+    return
+    $book/title
+  }
+</autor>
+
+
+#################### ZAD 20 ####################
+<wynik>
+{
+  for $play in collection("db/shakespeare")/PLAY
+  return $play/TITLE
+}
+</wynik>
+
+
+
+#################### ZAD 21 ####################
+for $play in collection("db/shakespeare")/PLAY
+where some $line in $play//LINE satisfies contains($line, 'or not to be')
+return $play/TITLE
+
+
+
+#################### ZAD 22 ####################
+<wynik>
+    <sztuka tytul="The Tragedy of Hamlet, Prince of Denmark">
+        <postaci>26</postaci>
+        <aktow>5</aktow>
+        <scen>20</scen>
+    </sztuka>
+    <sztuka tytul="The Tragedy of Macbeth">
+        <postaci>28</postaci>
+        <aktow>5</aktow>
+        <scen>28</scen>
+    </sztuka>
+    <sztuka tytul="The Tragedy of Othello, the Moor of Venice">
+        <postaci>15</postaci>
+        <aktow>5</aktow>
+        <scen>15</scen>
+    </sztuka>
+    <sztuka tytul="The Tragedy of Romeo and Juliet">
+        <postaci>25</postaci>
+        <aktow>5</aktow>
+        <scen>24</scen>
+    </sztuka>
+</wynik>
